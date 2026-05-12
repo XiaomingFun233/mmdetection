@@ -40,7 +40,7 @@
 English | [简体中文](README_zh-CN.md)
 
 </div>
-
+this repo version is 2.26.0 for musa GPU to run Uniad
 ## Introduction
 
 MMDetection is an open source object detection toolbox based on PyTorch. It is
