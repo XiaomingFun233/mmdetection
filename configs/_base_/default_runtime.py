@@ -9,7 +9,7 @@ log_config = dict(
 # yapf:enable
 custom_hooks = [dict(type='NumClassCheckHook')]
 
-dist_params = dict(backend='nccl')
+dist_params = dict(backend='mccl')
 log_level = 'INFO'
 load_from = None
 resume_from = None

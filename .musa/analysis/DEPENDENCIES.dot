@@ -1,0 +1,12 @@
+digraph CUDA_DEPENDENCIES {
+  rankdir=TB;
+  node [shape=box];
+
+  mmdet [label="mmdetection\nv2.26.0\n(Python only)", style=filled, fillcolor=lightblue];
+  mmcv [label="mmcv-full\n>=1.3.17\n(CUDA ops)", style=filled, fillcolor=orange];
+  torch [label="PyTorch\n(torch.cuda)", style=filled, fillcolor=yellow];
+
+  mmdet -> mmcv [label="requires"];
+  mmdet -> torch [label="torch.cuda API"];
+  mmcv -> torch [label="CUDA ops"];
+}

@@ -16,7 +16,7 @@ from mmdet.utils import (build_ddp, build_dp, compat_cfg,
                          find_latest_checkpoint, get_root_logger)
 
 
-def init_random_seed(seed=None, device='cuda'):
+def init_random_seed(seed=None, device='musa'):
     """Initialize random seed.
 
     If the seed is not set, the seed will be automatically randomized,
@@ -62,10 +62,10 @@ def set_random_seed(seed, deterministic=False):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    torch.musa.manual_seed_all(seed)
     if deterministic:
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+        torch.backends.mudnn.deterministic = True
+        torch.backends.mudnn.benchmark = False
 
 
 def auto_scale_lr(cfg, distributed, logger):

@@ -12,7 +12,7 @@ def cast_tensor_type(x, scale=1., dtype=None):
 
 
 def fp16_clamp(x, min=None, max=None):
-    if not x.is_cuda and x.dtype == torch.float16:
+    if not x.is_musa and x.dtype == torch.float16:
         # clamp for cpu float16, tensor fp16 has no clamp implementation
         return x.float().clamp(min, max).half()
 
@@ -57,7 +57,7 @@ class BboxOverlaps2D:
             bboxes1 = cast_tensor_type(bboxes1, self.scale, self.dtype)
             bboxes2 = cast_tensor_type(bboxes2, self.scale, self.dtype)
             overlaps = bbox_overlaps(bboxes1, bboxes2, mode, is_aligned)
-            if not overlaps.is_cuda and overlaps.dtype == torch.float16:
+            if not overlaps.is_musa and overlaps.dtype == torch.float16:
                 # resume cpu float32
                 overlaps = overlaps.float()
             return overlaps

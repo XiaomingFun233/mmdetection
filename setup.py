@@ -9,8 +9,13 @@ import warnings
 from setuptools import find_packages, setup
 
 import torch
-from torch.utils.cpp_extension import (BuildExtension, CppExtension,
-                                       CUDAExtension)
+from torch.utils.cpp_extension import (BuildExtension, CppExtension)
+try:
+    from torch_musa.utils.musa_extension import MUSAExtension
+    HAS_MUSA = True
+except ImportError:
+    from torch.utils.cpp_extension import CUDAExtension as MUSAExtension
+    HAS_MUSA = False
 
 
 def readme():
@@ -28,22 +33,22 @@ def get_version():
     return locals()['__version__']
 
 
-def make_cuda_ext(name, module, sources, sources_cuda=[]):
+def make_musa_ext(name, module, sources, sources_musa=[]):
 
     define_macros = []
     extra_compile_args = {'cxx': []}
 
-    if torch.cuda.is_available() or os.getenv('FORCE_CUDA', '0') == '1':
-        define_macros += [('WITH_CUDA', None)]
-        extension = CUDAExtension
-        extra_compile_args['nvcc'] = [
-            '-D__CUDA_NO_HALF_OPERATORS__',
-            '-D__CUDA_NO_HALF_CONVERSIONS__',
-            '-D__CUDA_NO_HALF2_OPERATORS__',
+    if torch.musa.is_available() or os.getenv('FORCE_MUSA', '0') == '1':
+        define_macros += [('WITH_MUSA', None)]
+        extension = MUSAExtension
+        extra_compile_args['mcc'] = [
+            '-D__MUSA_NO_HALF_OPERATORS__',
+            '-D__MUSA_NO_HALF_CONVERSIONS__',
+            '-D__MUSA_NO_HALF2_OPERATORS__',
         ]
-        sources += sources_cuda
+        sources += sources_musa
     else:
-        print(f'Compiling {name} without CUDA')
+        print(f'Compiling {name} without MUSA')
         extension = CppExtension
 
     return extension(
@@ -51,6 +56,9 @@ def make_cuda_ext(name, module, sources, sources_cuda=[]):
         sources=[os.path.join(*module.split('.'), p) for p in sources],
         define_macros=define_macros,
         extra_compile_args=extra_compile_args)
+
+# Alias for backward compatibility
+make_cuda_ext = make_musa_ext
 
 
 def parse_requirements(fname='requirements.txt', with_version=True):

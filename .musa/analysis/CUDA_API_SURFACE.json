@@ -1,0 +1,64 @@
+{
+  "torch_cuda_api": {
+    "torch.cuda.is_available": {
+      "count": 2,
+      "files": ["setup.py", "docs/en/faq.md"]
+    },
+    "torch.cuda.Stream": {
+      "count": 1,
+      "files": ["docs/en/1_exist_data_model.md"]
+    },
+    "torch.cuda.empty_cache": {
+      "count": 1,
+      "files": ["docs/en/faq.md"]
+    },
+    ".cuda()": {
+      "count": 5,
+      "files": [
+        "tools/deployment/pytorch2onnx.py",
+        "mmdet/apis/test.py",
+        "mmdet/core/bbox/samplers/score_hlr_sampler.py"
+      ]
+    },
+    ".is_cuda": {
+      "count": 2,
+      "files": ["mmdet/apis/inference.py"]
+    },
+    "device='cuda'": {
+      "count": 15,
+      "files": [
+        "mmdet/apis/inference.py",
+        "mmdet/apis/test.py",
+        "tools/deployment/test_torchserver.py",
+        "docs/en/1_exist_data_model.md",
+        "docs/en/get_started.md",
+        "docs/en/useful_tools.md",
+        "configs/_base_/default_runtime.py"
+      ]
+    }
+  },
+  "cuda_extensions": {
+    "CUDAExtension": {
+      "imported": true,
+      "used": false,
+      "file": "setup.py"
+    },
+    "BuildExtension": {
+      "imported": true,
+      "used": true,
+      "file": "setup.py"
+    }
+  },
+  "distributed": {
+    "torch.distributed": true,
+    "DDP": true,
+    "nccl_backend": "via mmcv"
+  },
+  "external_cuda_deps": {
+    "mmcv-full": {
+      "version": ">=1.3.17",
+      "cuda_ops": ["RoIPool", "RoIAlign", "NMS", "bbox_overlaps"],
+      "must_musify_first": true
+    }
+  }
+}

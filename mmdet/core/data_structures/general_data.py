@@ -294,14 +294,19 @@ class GeneralData(NiceRepr):
         return new_data
 
     # Tensor-like methods
-    def cuda(self):
+    def musa(self):
         """Apply same name function to all tensors in data_fields."""
         new_data = self.new()
         for k, v in self.items():
             if isinstance(v, torch.Tensor):
-                v = v.cuda()
+                v = v.musa()
             new_data[k] = v
         return new_data
+
+    # Tensor-like methods (alias for backward compatibility)
+    def cuda(self):
+        """Apply same name function to all tensors in data_fields."""
+        return self.musa()
 
     # Tensor-like methods
     def detach(self):

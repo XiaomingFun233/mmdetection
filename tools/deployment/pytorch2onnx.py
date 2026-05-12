@@ -147,7 +147,7 @@ def pytorch2onnx(model,
                 return_loss=False,
                 rescale=True)[0]
 
-        img_list = [_.cuda().contiguous() for _ in img_list]
+        img_list = [_.musa().contiguous() for _ in img_list]
         if dynamic_export:
             img_list = img_list + [_.flip(-1).contiguous() for _ in img_list]
             img_meta_list = img_meta_list * 2

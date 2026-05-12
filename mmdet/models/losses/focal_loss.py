@@ -222,7 +222,7 @@ class FocalLoss(nn.Module):
             if self.activated:
                 calculate_loss_func = py_focal_loss_with_prob
             else:
-                if torch.cuda.is_available() and pred.is_cuda:
+                if torch.musa.is_available() and pred.is_musa:
                     calculate_loss_func = sigmoid_focal_loss
                 else:
                     num_classes = pred.size(1)

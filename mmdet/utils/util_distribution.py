@@ -2,20 +2,20 @@
 import torch
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 
-dp_factory = {'cuda': MMDataParallel, 'cpu': MMDataParallel}
+dp_factory = {'musa': MMDataParallel, 'cuda': MMDataParallel, 'cpu': MMDataParallel}
 
-ddp_factory = {'cuda': MMDistributedDataParallel}
+ddp_factory = {'musa': MMDistributedDataParallel, 'cuda': MMDistributedDataParallel}
 
 
-def build_dp(model, device='cuda', dim=0, *args, **kwargs):
+def build_dp(model, device='musa', dim=0, *args, **kwargs):
     """build DataParallel module by device type.
 
-    if device is cuda, return a MMDataParallel model; if device is mlu,
-    return a MLUDataParallel model.
+    if device is musa, return a MMDataParallel model; if device is cuda,
+    return a MMDataParallel model.
 
     Args:
         model (:class:`nn.Module`): model to be parallelized.
-        device (str): device type, cuda, cpu or mlu. Defaults to cuda.
+        device (str): device type, musa, cuda, cpu. Defaults to musa.
         dim (int): Dimension used to scatter the data. Defaults to 0.
 
     Returns:
@@ -27,6 +27,8 @@ def build_dp(model, device='cuda', dim=0, *args, **kwargs):
         torch.npu.set_device(kwargs['device_ids'][0])
         torch.npu.set_compile_mode(jit_compile=False)
         model = model.npu()
+    elif device == 'musa':
+        model = model.musa(kwargs['device_ids'][0])
     elif device == 'cuda':
         model = model.cuda(kwargs['device_ids'][0])
     elif device == 'mlu':
@@ -37,15 +39,14 @@ def build_dp(model, device='cuda', dim=0, *args, **kwargs):
     return dp_factory[device](model, dim=dim, *args, **kwargs)
 
 
-def build_ddp(model, device='cuda', *args, **kwargs):
+def build_ddp(model, device='musa', *args, **kwargs):
     """Build DistributedDataParallel module by device type.
 
-    If device is cuda, return a MMDistributedDataParallel model;
-    if device is mlu, return a MLUDistributedDataParallel model.
+    If device is musa, return a MMDistributedDataParallel model;
 
     Args:
         model (:class:`nn.Module`): module to be parallelized.
-        device (str): device type, mlu or cuda.
+        device (str): device type, musa or cuda.
 
     Returns:
         :class:`nn.Module`: the module to be parallelized
@@ -54,13 +55,15 @@ def build_ddp(model, device='cuda', *args, **kwargs):
         .. [1] https://pytorch.org/docs/stable/generated/torch.nn.parallel.
                      DistributedDataParallel.html
     """
-    assert device in ['cuda', 'mlu',
-                      'npu'], 'Only available for cuda or mlu or npu devices.'
+    assert device in ['musa', 'cuda', 'mlu',
+                      'npu'], 'Only available for musa, cuda, mlu or npu devices.'
     if device == 'npu':
         from mmcv.device.npu import NPUDistributedDataParallel
         torch.npu.set_compile_mode(jit_compile=False)
         ddp_factory['npu'] = NPUDistributedDataParallel
         model = model.npu()
+    elif device == 'musa':
+        model = model.musa()
     elif device == 'cuda':
         model = model.cuda()
     elif device == 'mlu':
@@ -81,9 +84,15 @@ def is_mlu_available():
     return hasattr(torch, 'is_mlu_available') and torch.is_mlu_available()
 
 
+def is_musa_available():
+    """Returns a bool indicating if MUSA is currently available."""
+    return hasattr(torch, 'musa') and torch.musa.is_available()
+
+
 def get_device():
-    """Returns an available device, cpu, cuda or mlu."""
+    """Returns an available device, cpu, musa, cuda or mlu."""
     is_device_available = {
+        'musa': is_musa_available(),
         'npu': is_npu_available(),
         'cuda': torch.cuda.is_available(),
         'mlu': is_mlu_available()

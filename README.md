@@ -101,6 +101,23 @@ Find more new features in [3.x branch](https://github.com/open-mmlab/mmdetection
 
 Please refer to [Installation](docs/en/get_started.md/#Installation) for installation instructions.
 
+### Install this MUSA version without installing dependencies
+
+Use this command when `torch`, `torch_musa`, and `mmcv-full` have already been
+installed in the target image, and you only want to install this MUSA-adapted
+MMDetection source tree:
+
+```bash
+cd /home/mmdetection-2.26.0
+python -m pip install -e . --no-deps --no-build-isolation
+```
+
+Verify the installation:
+
+```bash
+python -c "import mmdet; print(mmdet.__version__); from mmdet.apis import init_detector"
+```
+
 ## Getting Started
 
 Please see [get_started.md](docs/en/get_started.md) for the basic usage of MMDetection. We provide [colab tutorial](demo/MMDet_Tutorial.ipynb) and [instance segmentation colab tutorial](demo/MMDet_InstanceSeg_Tutorial.ipynb), and other tutorials for:
